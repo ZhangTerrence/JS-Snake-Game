@@ -19,6 +19,14 @@ export default class Tile extends Vue {
   background: whitesmoke;
   float: left;
   border-radius: .025rem;
-  border: solid .5px rgb(120, 120, 120);
+  border: solid .5px rgb(170, 170, 170);
+}
+
+.game-tile.snake{
+  background: greenyellow;
+}
+
+.game-tile.apple{
+  background: red;
 }
 </style>

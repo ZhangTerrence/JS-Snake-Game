@@ -2,7 +2,8 @@
   <div id="app">
     <span id="title" class="title">Snake Game</span>
     <h1 id="subtitle" class="subtitle">Press Any Key to Start</h1>
-    <Game/>
+    <h2 id="score">{{score}}</h2>
+    <Game :gameRunning="running" :direction="direction"/>
   </div>
 </template>
 
@@ -16,16 +17,41 @@ import Game from './components/Game.vue';
   },
 })
 export default class App extends Vue {
-  public startGame(): void{
-    const title = document.getElementById("title")!
-    const subtitle = document.getElementById("subtitle")!
-    title.style.opacity = "0%"
-    title.style.display = "none"
-    subtitle.style.opacity = "0%"
-    subtitle.style.display = "none"
+  public direction: string = ""
+  private running: boolean = false
+  private score: number = 0
+
+  public addScore(): number{
+    return this.score += 1
   }
+
   mounted(){
-    document.body.onkeyup = this.startGame
+    window.addEventListener("keydown", (event) => {
+      const title = document.getElementById("title")!
+      const subtitle = document.getElementById("subtitle")!
+      title.style.opacity = "0%"
+      subtitle.style.opacity = "0%"
+      title.style.display = "none"
+      subtitle.style.display = "none"
+      this.running = true
+
+      // Sets direction for up
+      if (this.running && event.keyCode === 38){
+        this.direction = "UP"
+      }
+      // Sets direction for down
+      if (this.running && event.keyCode === 40){
+        this.direction = "DOWN"
+      }
+      // Sets direction for left
+      if (this.running && event.keyCode === 37){
+        this.direction = "LEFT"
+      }
+      // Sets direction for right
+      if (this.running && event.keyCode === 39){
+        this.direction = "RIGHT"
+      }
+    })
   }
 }
 </script>
@@ -47,9 +73,15 @@ export default class App extends Vue {
   align-items: center;
 }
 
+#score{
+  position: absolute;
+  font-size: 2.5rem;
+  top: 4rem;
+}
+
 .title{
   font-size: 10rem;
-  transition: all .3s;
+  transition: all 1s;
   z-index: 10;
 }
 .subtitle{
