@@ -22,16 +22,17 @@ export default class Game extends Vue {
   @Prop({default: null}) gameRunning!: boolean
   @Prop({default: null}) direction!: string
 
+
   @Watch("gameRunning")
   onChange(){
     window.setInterval(() => {
       this.run()
-    }, 750)
+    }, 250)
   }
 
   private squares: Array<object> = []
   private initialDirection: string = this.getInitialDirection(spawnInfo.initalMatch)
-  private snakeHead: string = ""
+  private snakeSegments: Array<any> = []
 
   public getInitialDirection(num: number): string{
    return (directions as any)[num]
@@ -48,58 +49,86 @@ export default class Game extends Vue {
     }
   }
 
-  // Snakify a tile
+  // Gets initial head of snake
   public startSnake(): void{
-    const snakeTile = document.getElementById(spawnInfo.snakeStart)!
-    this.snakeHead = spawnInfo.snakeStart
-    snakeTile.classList.add("snake")
+    this.snakeSegments.push(spawnInfo.snakeStart)
+    this.snakify()
   }
 
   // Applify a tile
   public setApple(): void{
     const appleCoordinate = (`${Math.floor(Math.random() * (20 - 1) + 1)}, ${Math.floor(Math.random() * (20 - 1) + 1)}`)
     const appleTile = document.getElementById(appleCoordinate)!
-    appleTile.classList.add("apple")
+     // If a snake tile is detected try again
+    if (appleTile.classList.value === "game-tile snake"){
+      this.setApple()
+      return
+    } else {
+      appleTile.classList.add("apple")
+    }
   }
 
-  public predict(x: number, y: number): any{
-    const split = this.snakeHead.split(",")
-    const newHead = (`${parseInt(split[0]) + x}, ${parseInt(split[1]) + y}`)
-    const oldTile = document.getElementById(this.snakeHead)!
-    const newTile = document.getElementById(newHead)!
-    if (newTile.classList.value === "game-tile apple"){
-      this.snakeHead = newHead
-      newTile.classList.add("snake")
-      newTile.classList.remove("apple");
-      (this.$parent as any).addScore()
-      this.setApple()
-    } else{
-      this.snakeHead = newHead
-      oldTile.classList.remove("snake")
-      newTile.classList.add("snake")
+  public snakify(): void{
+    this.snakeSegments.forEach(snakeInfo => {
+      const snakeTile = document.getElementById(snakeInfo)!
+      snakeTile.classList.add("snake")
+    })
+  }
+
+  public move(x: number, y: number): void{
+    // Gets the head of the snake
+    const snakehead = this.snakeSegments[0]
+    // Identifies the coordinates of the next tile based on the direction
+    const split = snakehead.split(",")
+    const updated = (`${parseInt(split[0]) + x}, ${parseInt(split[1]) + y}`)
+    const newTile = document.getElementById(updated)!
+    try {
+      // Snake head collides with snake or wall
+      if (newTile.classList.value === "game-tile snake"){
+        this.endGame()
+      } else if (newTile.classList.value === "game-tile apple"){
+        // Since apple is eaten the snake's new head is at the apple's coordinate
+        this.snakeSegments.unshift(updated);
+        // No popping because the snake gains length
+        // Unapplify the tile
+        newTile.classList.remove("apple");
+        (this.$parent as any).addScore();
+        this.snakify()
+        this.setApple() 
+      } else {
+        // Adds new head to the array
+        this.snakeSegments.unshift(updated)
+        // Removes old head from the array and identifies the corresponding tile to remove class "snake"
+        const oldTile = document.getElementById(this.snakeSegments.pop())!
+        oldTile.classList.remove("snake")
+        this.snakify()
+      } 
+    } catch (error) {
+      this.endGame()
     }
-    
-    
-    // If newHead goes out of bound, end game
   }
   
   // Runs game
   public run(): void{
     const direction = this.$props.direction
-    
-    // Directions are currently a bit messed up but still works
+    // Directions 
     if (direction === "UP"){
-      this.predict(-1, 0)
+      this.move(-1, 0)
     }
     if (direction === "DOWN"){
-      this.predict(1, 0)
+      this.move(1, 0)
     }
     if (direction === "LEFT"){
-      this.predict(0, -1)
+      this.move(0, -1)
     }
     if (direction === "RIGHT"){
-      this.predict(0, 1)
+      this.move(0, 1)
     }
+  }
+
+  public endGame(): void{
+    clearInterval((this.onChange as any)) 
+    window.location.reload()  
   }
 
   mounted(){
