@@ -27,7 +27,7 @@ export default class Game extends Vue {
   onChange(){
     window.setInterval(() => {
       this.run()
-    }, 250)
+    }, 750)
   }
 
   private squares: Array<object> = []
@@ -74,7 +74,7 @@ export default class Game extends Vue {
       snakeTile.classList.add("snake")
     })
   }
-
+  
   public move(x: number, y: number): void{
     // Gets the head of the snake
     const snakehead = this.snakeSegments[0]
@@ -127,8 +127,8 @@ export default class Game extends Vue {
   }
 
   public endGame(): void{
-    clearInterval((this.onChange as any)) 
-    window.location.reload()  
+    clearInterval((this.onChange as any))
+    console.log((this.$parent as any).score)
   }
 
   mounted(){

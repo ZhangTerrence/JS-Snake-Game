@@ -36,19 +36,19 @@ export default class App extends Vue {
       this.running = true
 
       // Sets direction for up
-      if (this.running && event.keyCode === 38){
+      if (this.running && event.keyCode === 38 && this.direction !== "DOWN"){
         this.direction = "UP"
       }
       // Sets direction for down
-      if (this.running && event.keyCode === 40){
+      if (this.running && event.keyCode === 40 && this.direction !== "UP"){
         this.direction = "DOWN"
       }
       // Sets direction for left
-      if (this.running && event.keyCode === 37){
+      if (this.running && event.keyCode === 37 && this.direction !== "RIGHT"){
         this.direction = "LEFT"
       }
       // Sets direction for right
-      if (this.running && event.keyCode === 39){
+      if (this.running && event.keyCode === 39 && this.direction !== "LEFT"){
         this.direction = "RIGHT"
       }
     })
