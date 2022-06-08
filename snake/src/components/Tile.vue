@@ -7,7 +7,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class Tile extends Vue {
-    @Prop() coords
+  @Prop() coords
 }
 
 </script>
@@ -24,6 +24,11 @@ export default class Tile extends Vue {
 
 .game-tile.snake{
   background: greenyellow;
+}
+
+.game-tile.snake.head{
+  background: greenyellow;
+  border: 1px solid #000;
 }
 
 .game-tile.apple{

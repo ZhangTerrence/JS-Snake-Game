@@ -3,17 +3,20 @@
     <span id="title" class="title">Snake Game</span>
     <h1 id="subtitle" class="subtitle">Press Any Key to Start</h1>
     <h2 id="score">{{score}}</h2>
-    <Game :gameRunning="running" :direction="direction"/>
+    <Game :gameRunning="running" :direction="direction" @getInitial="setInitial"/>
+    <Endscreen :endscore="score"/>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import Game from './components/Game.vue';
+import Endscreen from './components/Endscreen.vue';
 
 @Component({
   components: {
-    Game
+    Game,
+    Endscreen
   },
 })
 export default class App extends Vue {
@@ -25,32 +28,38 @@ export default class App extends Vue {
     return this.score += 1
   }
 
+  public setInitial(value: string): void{
+    this.direction = value
+  }
+
+  public listenStart(event: KeyboardEvent): any{
+    const title = document.getElementById("title")!
+    const subtitle = document.getElementById("subtitle")!
+    title.style.opacity = "0%"
+    subtitle.style.opacity = "0%"
+    this.running = true
+
+    // Sets direction for up
+    if (this.running && event.key === "ArrowUp" && this.direction !== "DOWN"){
+      this.direction = "UP"
+    }
+    // Sets direction for down
+    if (this.running && event.key === "ArrowDown" && this.direction !== "UP"){
+      this.direction = "DOWN"
+    }
+    // Sets direction for left
+    if (this.running && event.key === "ArrowLeft" && this.direction !== "RIGHT"){
+      this.direction = "LEFT"
+    }
+    // Sets direction for right
+    if (this.running && event.key === "ArrowRight" && this.direction !== "LEFT"){
+      this.direction = "RIGHT"
+    }
+  }
+
   mounted(){
     window.addEventListener("keydown", (event) => {
-      const title = document.getElementById("title")!
-      const subtitle = document.getElementById("subtitle")!
-      title.style.opacity = "0%"
-      subtitle.style.opacity = "0%"
-      title.style.display = "none"
-      subtitle.style.display = "none"
-      this.running = true
-
-      // Sets direction for up
-      if (this.running && event.keyCode === 38 && this.direction !== "DOWN"){
-        this.direction = "UP"
-      }
-      // Sets direction for down
-      if (this.running && event.keyCode === 40 && this.direction !== "UP"){
-        this.direction = "DOWN"
-      }
-      // Sets direction for left
-      if (this.running && event.keyCode === 37 && this.direction !== "RIGHT"){
-        this.direction = "LEFT"
-      }
-      // Sets direction for right
-      if (this.running && event.keyCode === 39 && this.direction !== "LEFT"){
-        this.direction = "RIGHT"
-      }
+      this.listenStart(event)
     })
   }
 }
@@ -81,7 +90,7 @@ export default class App extends Vue {
 
 .title{
   font-size: 10rem;
-  transition: all 1s;
+  transition: all .5s;
   z-index: 10;
 }
 .subtitle{

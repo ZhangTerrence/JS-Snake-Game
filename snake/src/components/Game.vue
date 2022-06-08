@@ -1,9 +1,9 @@
 <template>
-  <div id="game">
+  <section id="game">
     <div v-for="(i, index) in squares" :key="index">
       <Tile :id="i.coordinate"/>
     </div>
-  </div>
+  </section>
 </template>
 
 <script lang="ts">
@@ -22,12 +22,11 @@ export default class Game extends Vue {
   @Prop({default: null}) gameRunning!: boolean
   @Prop({default: null}) direction!: string
 
-
   @Watch("gameRunning")
   onChange(){
     window.setInterval(() => {
       this.run()
-    }, 750)
+    }, 650)
   }
 
   private squares: Array<object> = []
@@ -77,9 +76,9 @@ export default class Game extends Vue {
   
   public move(x: number, y: number): void{
     // Gets the head of the snake
-    const snakehead = this.snakeSegments[0]
+    const snakeHead = this.snakeSegments[0]
     // Identifies the coordinates of the next tile based on the direction
-    const split = snakehead.split(",")
+    const split = snakeHead.split(",")
     const updated = (`${parseInt(split[0]) + x}, ${parseInt(split[1]) + y}`)
     const newTile = document.getElementById(updated)!
     try {
@@ -128,19 +127,24 @@ export default class Game extends Vue {
 
   public endGame(): void{
     clearInterval((this.onChange as any))
-    console.log((this.$parent as any).score)
+    document.getElementById("endscreen")!.style.display = "flex"
+    document.getElementById("game")!.style.display = "none"
+    document.getElementById("score")!.style.display = "none"
+    document.getElementById("title")!.style.display = "none"
+    document.getElementById("subtitle")!.style.display = "none"
   }
 
   mounted(){
     // Once game is loaded, add coordinates to each tile
     this.setCoordinate()
+    // Emits the initial direction to App.vue
+    this.$emit("getInitial", this.initialDirection)
   }
+
   updated(){
     this.startSnake()
     this.setApple()
   }
-
-
 }
 </script>
  
