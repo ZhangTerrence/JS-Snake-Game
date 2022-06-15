@@ -26,7 +26,7 @@ export default class Game extends Vue {
   onChange(){
     window.setInterval(() => {
       this.run()
-    }, 650)
+    }, 750)
   }
 
   private squares: Array<object> = []
